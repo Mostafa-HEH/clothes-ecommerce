@@ -4,7 +4,6 @@ import { FormInput } from "../form-input/form-input.component";
 import { CustomButton } from "../custom-button/custom-button.component";
 
 import { auth, createUserProfileDocument } from "../../firebase/firebase.utils";
-import { createUserWithEmailAndPassword } from "firebase/auth";
 
 import "./sign-up.styles.scss";
 
@@ -19,16 +18,21 @@ class SignUp extends React.Component {
     };
   }
 
-  handleSubmit = async (e) => {
-    e.preventDefault();
+  handleSubmit = async (event) => {
+    event.preventDefault();
+
     const { displayName, email, password, confirmPassword } = this.state;
+
     if (password !== confirmPassword) {
-      alert("Password dosn't match");
+      alert("passwords don't match");
       return;
     }
 
     try {
-      const { user } = createUserWithEmailAndPassword(auth, email, password);
+      const { user } = await auth.createUserWithEmailAndPassword(
+        email,
+        password
+      );
 
       await createUserProfileDocument(user, { displayName });
 
@@ -38,8 +42,8 @@ class SignUp extends React.Component {
         password: "",
         confirmPassword: "",
       });
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
     }
   };
 
